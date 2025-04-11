@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="login-form">
+        <input type="text" id="login-username" placeholder="Username" required><br>
+        <input type="password" id="login-password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            fetch('http://localhost:5000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.message === 'Login successful!') {
+                    alert('Login successful!');
+                    window.location.href = 'leaderbord.html';  
+                } else {
+                    alert('Login failed: ' + data.message);
+                    window.location.href = 'register.html';  
+                }
+            })
+            .catch(error => console.log('Login Error:', error));
+        });
+    </script>
+</body>
+</html>

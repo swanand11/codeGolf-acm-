@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="register-form">
+        <input type="text" id="register-username" placeholder="Username" required><br>
+        <input type="password" id="register-password" placeholder="Password" required><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        // Handle Register Form Submission
+        const registerForm = document.getElementById('register-form');
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+
+            fetch('http://localhost:5000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Handle registration response
+                if (data.message === 'Registration successful!"') {
+                    alert('Registration successful! You can now log in.');
+                    window.location.href = 'login.html';  
+                } else {
+                    alert('Registration failed: ' + data.message);
+                }
+            })
+            .catch(error => console.log('Register Error:', error));
+        });
+    </script>
+</body>
+</html>

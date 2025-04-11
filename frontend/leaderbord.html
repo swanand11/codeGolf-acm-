@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .leaderboard {
+            width: 90%;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .leaderboard h1 {
+            text-align: center;
+            background: #4CAF50;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard th, .leaderboard td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leaderboard th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+        }
+
+        .leaderboard tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .leaderboard td.rank {
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard">
+        <h1>Leaderboard</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rank">1</td>
+                    <td>Alice</td>
+                    <td>1500</td>
+                </tr>
+                <tr>
+                    <td class="rank">2</td>
+                    <td>Bob</td>
+                    <td>1200</td>
+                </tr>
+                <tr>
+                    <td class="rank">3</td>
+                    <td>Charlie</td>
+                    <td>1000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
