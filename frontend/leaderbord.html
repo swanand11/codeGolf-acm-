@@ -63,7 +63,7 @@
 <body>
     <div class="leaderboard">
         <h1>Leaderboard</h1>
-        <table>
+        <table id="leaderboardTable">
             <thead>
                 <tr>
                     <th>Rank</th>
@@ -72,23 +72,37 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="rank">1</td>
-                    <td>Alice</td>
-                    <td>1500</td>
-                </tr>
-                <tr>
-                    <td class="rank">2</td>
-                    <td>Bob</td>
-                    <td>1200</td>
-                </tr>
-                <tr>
-                    <td class="rank">3</td>
-                    <td>Charlie</td>
-                    <td>1000</td>
-                </tr>
+                <!-- Data will be dynamically inserted here -->
             </tbody>
         </table>
     </div>
+    <script>
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/showleaderboard');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch leaderboard data');
+                }
+                const data = await response.json();
+                const tableBody = document.querySelector('#leaderboardTable tbody');
+                tableBody.innerHTML = ''; 
+    
+                // Loop through each entry and add to table
+                data.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="rank">${index + 1}</td>
+                        <td>${entry.username}</td>   <!-- Use username here -->
+                        <td>${entry.score}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+            }
+        }
+        window.onload = fetchLeaderboard;
+    </script>
+    
 </body>
 </html>

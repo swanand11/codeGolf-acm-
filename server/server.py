@@ -7,7 +7,6 @@ import base64
 from flask import Flask, request, render_template, redirect, url_for, flash
 app = Flask(__name__)
 CORS(app)
-CORS(app, origins=["http://localhost:5500"])
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key') 
 
 # Database connection function
@@ -55,9 +54,7 @@ def register():
     except sqlite3.IntegrityError:
         return jsonify({"message": "Username already exists!"}), 409
 
-    return jsonify({"message": "Registration successful!"})
-
-
+# Login route - for user login
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -80,6 +77,41 @@ def login():
         return jsonify({"message": "Login successful!"})
     else:
         return jsonify({"message": "Invalid username or password."}), 401
+@app.route('/showleaderboard', methods=['GET'])
+def show_leaderboard():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, score FROM users ORDER BY score DESC")
+    users = cursor.fetchall()
+    conn.close()
+
+    leaderboard = [{"username": user['username'], "score": user['score']} for user in users]
+    return jsonify(leaderboard)
+@app.route('/update_core', methods=['POST'])
+def update_score():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    username = 'test'
+
+    cursor.execute("SELECT score FROM users WHERE username = ?", (username,))
+    current_score = cursor.fetchone()
+
+    if current_score:
+        new_score = current_score['score'] + 10
+        cursor.execute("UPDATE users SET score = ? WHERE username = ?", (new_score, username))
+        conn.commit()
+        response = {
+            'message': 'Score updated successfully!',
+            'updated_score': new_score
+        }
+    else:
+        response = {
+            'message': 'User not found.'
+        }
+
+    conn.close()
+    return jsonify(response)
 
 
 

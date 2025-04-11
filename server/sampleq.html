@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Score</title>
+    <script>
+        async function updateScore() {
+            const response = await fetch('http://127.0.0.1:5000/update_core', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: 'test_user',  // Pass the username of the player you want to update
+                    scoreIncrement: 10
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Score updated:', result);
+                alert(result.message + " New score: " + result.updated_score);
+            } else {
+                console.error('Failed to update score');
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Update Score</h1>
+    <button onclick="updateScore()">Update Score</button>
+</body>
+</html>
