@@ -1,3 +1,4 @@
-# Ignore SQLite database files
+__pycache__/
+*.pyc
 *.db
-
+.env
