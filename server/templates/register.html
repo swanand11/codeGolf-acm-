@@ -32,7 +32,7 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);  // Handle registration response
-                if (data.message === 'Registration successful!"') {
+                if (data.message === 'Registration successful!') {
                     alert('Registration successful! You can now log in.');
                     window.location.href = 'login.html';  
                 } else {
