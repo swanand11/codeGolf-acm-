@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import base64
+from evaluate import run_code  #
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -157,6 +158,34 @@ def update_score():
         return jsonify(response)
     finally:
         release_connection(conn)
+
+@app.route('/evaluate_code', methods=['POST'])
+def evaluate_code():
+    data = request.get_json()
+    username = data.get('username')
+    code = data.get('code')
+    language = data.get('language')
+    expected_output = data.get('expected_output')
+
+    result = run_code(code, language, expected_output)
+
+    if result["correct"]:
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT score FROM users WHERE username = %s", (username,))
+            row = cursor.fetchone()
+            current_score = row[0] if row else 0
+
+            new_score = current_score + result["score"]
+            cursor.execute("UPDATE users SET score = %s WHERE username = %s", (new_score, username))
+            conn.commit()
+            cursor.close()
+        finally:
+            release_connection(conn)
+
+    return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
