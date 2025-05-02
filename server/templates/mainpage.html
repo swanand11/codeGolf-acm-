@@ -1,0 +1,302 @@
+\questions.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions - ACM RIT</title>
+    <style>
+        :root {
+            --dark-blue: #0d1b2a;
+            --medium-blue: #1b263b;
+            --light-blue: #415a77;
+            --accent-blue: #007bff;
+            --white: #f8f9fa;
+            --gray: #e0e1dd;
+            --rit-red: #F76902;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--dark-blue);
+            margin: 0;
+            padding: 20px;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 15px;
+        }
+        
+        .header-logo {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+        
+        .acm {
+            color: var(--white);
+            background-color: var(--dark-blue);
+            padding: 6px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .rit {
+            color: var(--rit-red);
+            margin-left: 6px;
+            font-weight: 800;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            margin: 30px auto;
+            background: var(--medium-blue);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            color: var(--white);
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            background-color: var(--accent-blue);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .question-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .question-card {
+            background-color: var(--light-blue);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        .question-card h2 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+        
+        .question-card p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .easy {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .medium {
+            background-color: #fd7e14;
+            color: white;
+        }
+        
+        .hard {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .solve-button {
+            display: inline-block;
+            padding: 10px 18px;
+            background-color: var(--accent-blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .solve-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        /* Make it responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 25px;
+            }
+            
+            .header-logo {
+                font-size: 30px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            .question-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-logo">
+            <span class="acm">ACM</span><span class="rit">RIT</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="nav-bar">
+            <div class="user-info">
+                <span class="user-name">Welcome, <span id="username">User</span></span>
+            </div>
+            <div class="nav-buttons">
+                <a href="leaderbord.html" class="nav-button">Leaderboard</a>
+                <a href="logout" class="nav-button">Logout</a>
+            </div>
+        </div>
+        
+        <h1>Available Questions</h1>
+        
+        <div class="question-list">
+            <!-- Question 1 -->
+            <div class="question-card">
+                <span class="difficulty easy">Easy</span>
+                <h2>Fibonacci Series</h2>
+                <p>Generate the first n numbers in the Fibonacci sequence. Learn about dynamic programming and recursion.</p>
+                <a href="sampleq.html" class="solve-button">Solve Challenge</a>
+            </div>
+            
+            <!-- Question 2 -->
+            <div class="question-card">
+                <span class="difficulty easy">Easy</span>
+                <h2>FizzBuzz</h2>
+                <p>Print numbers from 1 to n, but replace multiples of 3 with "Fizz" and multiples of 5 with "Buzz".</p>
+                <a href="#" class="solve-button">Solve Challenge</a>
+            </div>
+            
+            <!-- Question 3 -->
+            <div class="question-card">
+                <span class="difficulty medium">Medium</span>
+                <h2>Palindrome Checker</h2>
+                <p>Determine if a given string is a palindrome, considering only alphanumeric characters and ignoring cases.</p>
+                <a href="#" class="solve-button">Solve Challenge</a>
+            </div>
+            
+            <!-- Question 4 -->
+            <div class="question-card">
+                <span class="difficulty medium">Medium</span>
+                <h2>Two Sum</h2>
+                <p>Find two numbers in an array that add up to a specific target and return their indices.</p>
+                <a href="#" class="solve-button">Solve Challenge</a>
+            </div>
+            
+            <!-- Question 5 -->
+            <div class="question-card">
+                <span class="difficulty hard">Hard</span>
+                <h2>Binary Tree Traversal</h2>
+                <p>Implement in-order, pre-order, and post-order traversal for a binary tree structure.</p>
+                <a href="#" class="solve-button">Solve Challenge</a>
+            </div>
+            
+            <!-- Question 6 -->
+            <div class="question-card">
+                <span class="difficulty hard">Hard</span>
+                <h2>Merge K Sorted Lists</h2>
+                <p>Merge k sorted linked lists into one sorted linked list. Optimize for performance.</p>
+                <a href="#" class="solve-button">Solve Challenge</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get username from localStorage (set during login)
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                document.getElementById('username').textContent = username;
+            }
+        });
+    </script>
+</body>
+</html>
