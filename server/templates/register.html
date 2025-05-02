@@ -1,20 +1,176 @@
+\register.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - ACM RIT</title>
+    <style>
+        :root {
+            --dark-blue: #0d1b2a;
+            --medium-blue: #1b263b;
+            --light-blue: #415a77;
+            --accent-blue: #007bff;
+            --white: #f8f9fa;
+            --gray: #e0e1dd;
+            --rit-red: #F76902;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--dark-blue);
+            margin: 0;
+            padding: 20px;
+            color: var(--white);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 15px;
+        }
+        
+        .header-logo {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+        
+        .acm {
+            color: var(--white);
+            background-color: var(--dark-blue);
+            padding: 6px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .rit {
+            color: var(--rit-red);
+            margin-left: 6px;
+            font-weight: 800;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 90%;
+            margin: 0 auto;
+            background: var(--medium-blue);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: var(--white);
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--white);
+            color: var(--dark-blue);
+            font-size: 16px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        input::placeholder {
+            color: #6c757d;
+        }
+        
+        button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px 32px;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--white);
+            background-color: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Make it responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 85%;
+                padding: 30px;
+            }
+            
+            .header-logo {
+                font-size: 30px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Register</h1>
-    <form id="register-form">
-        <input type="text" id="register-username" placeholder="Username" required><br>
-        <input type="password" id="register-password" placeholder="Password" required><br>
-        <button type="submit">Register</button>
-    </form>
+    <div class="header">
+        <div class="header-logo">
+            <span class="acm">ACM</span><span class="rit">RIT</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>Register</h1>
+        <form id="register-form">
+            <input type="text" id="register-username" placeholder="Username" required>
+            <input type="password" id="register-password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        
+        <div class="login-link">
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </div>
+    </div>
 
     <script>
-        // Handle Register Form Submission
         const registerForm = document.getElementById('register-form');
         registerForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -31,7 +187,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);  // Handle registration response
+                console.log(data);
                 if (data.message === 'Registration successful!') {
                     alert('Registration successful! You can now log in.');
                     window.location.href = 'login.html';  
