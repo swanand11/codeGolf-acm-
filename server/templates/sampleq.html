@@ -272,79 +272,126 @@
     </div>
     
     <div class="container">
-        <!-- Navigation and sample case sections remain unchanged -->
-        
-        <!-- Updated Form with Username Field -->
-        <form id="codeForm">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required 
-                       pattern="[A-Za-z0-9_]{4,20}" 
-                       title="4-20 characters (letters, numbers, underscores)">
-            </div>
-
-            <div class="form-group">
-                <label for="languageSelect">Select Language:</label>
-                <select id="languageSelect" name="language" required>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                    <option value="c">C</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="codeArea">Code:</label>
-                <textarea id="codeArea" name="code" 
-                          placeholder="def fibonacci(n):" 
-                          required spellcheck="false"></textarea>
-            </div>
-
-            <button type="submit">Submit Solution</button>
-        </form>
-
-        <!-- Result Display -->
-        <div id="result" class="result-box"></div>
-
-        <!-- Existing navigation buttons -->
+    <h1 id="questionTitle">Loading...</h1>
+    <p id="questionDescription">Please wait while the question details are loaded.</p>
+    <div class="sample-case">
+        <h3>Sample Input</h3>
+        <pre id="sampleInput">Loading...</pre>
+        <h3>Sample Output</h3>
+        <pre id="sampleOutput">Loading...</pre>
     </div>
+
+    <form id="codeForm">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required 
+                   pattern="[A-Za-z0-9_]{4,20}" 
+                   title="4-20 characters (letters, numbers, underscores)">
+        </div>
+
+        <div class="form-group">
+            <label for="languageSelect">Select Language:</label>
+            <select id="languageSelect" name="language" required>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="c">C</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="codeArea">Code:</label>
+            <textarea id="codeArea" name="code" 
+                      placeholder="Write your code here..." 
+                      required spellcheck="false"></textarea>
+        </div>
+
+        <button type="submit">Submit Solution</button>
+    </form>
+
+    <div id="result" class="result-box"></div>
+</div>
 
     <!-- Integrated Script -->
     <script>
-        const form = document.getElementById('codeForm');
-        const resultDiv = document.getElementById('result');
-        const expectedOutput = [0, 1, 1, 2, 3, 5]; // For n=6
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                username: document.getElementById('username').value,
-                code: document.getElementById('codeArea').value,
-                language: document.getElementById('languageSelect').value,
-                expected_output: expectedOutput
-            };
-
-            try {
-                const response = await fetch('http://localhost:5000/evaluate_code', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-
-                const data = await response.json();
-                
-                // Display results with styling
-                resultDiv.className = data.correct ? 'success' : 'error';
-                resultDiv.innerHTML = data.correct ?
-                    `✅ Correct! ${data.message}` :
-                    `❌ Error: ${data.message}<br>
-                     Your output: ${data.output || 'none'}<br>
-                     Expected: ${data.expected}`;
-
-            } catch (error) {
-                resultDiv.className = 'error';
-                resultDiv.innerHTML = `🚨 Network Error: ${error.message}`;
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get the question ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const questionId = urlParams.get('id');
+    
+            if (!questionId) {
+                alert('No question ID provided!');
+                return;
             }
+    
+            let question = null;
+    
+            try {
+                // Fetch the question data from the JSON file
+                const response = await fetch('../questions.json'); // Adjust the path if needed
+                const questions = await response.json();
+    
+                // Find the question with the matching ID
+                question = questions.find(q => q.id === parseInt(questionId));
+                if (!question) {
+                    alert('Question not found!');
+                    return;
+                }
+    
+                // Populate the page with the question details
+                document.title = question.title; // Update the page title
+                document.getElementById('questionTitle').textContent = question.title;
+                document.getElementById('questionDescription').textContent = question.description;
+                document.getElementById('sampleInput').textContent = question.sample_input;
+                document.getElementById('sampleOutput').textContent = question.sample_output;
+    
+            } catch (error) {
+                console.error('Error loading question:', error);
+            }
+    
+            // Handle form submission
+            const form = document.getElementById('codeForm');
+            const resultDiv = document.getElementById('result');
+    
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+    
+                if (!question) {
+                    alert('Question data is not loaded yet!');
+                    return;
+                }
+    
+                // Collect form data
+                const formData = {
+                    username: document.getElementById('username').value,
+                    code: document.getElementById('codeArea').value,
+                    language: document.getElementById('languageSelect').value,
+                    question_id: question.id, // Include the question ID
+                    expected_output: question.sample_output // Include the expected output
+                };
+    
+                try {
+                    // Send the data to the backend for evaluation
+                    const response = await fetch('http://localhost:5000/evaluate_code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+    
+                    const data = await response.json();
+    
+                    // Display the evaluation results
+                    resultDiv.className = data.correct ? 'success' : 'error';
+                    resultDiv.innerHTML = data.correct
+                        ? `✅ Correct! ${data.message}`
+                        : `❌ Error: ${data.message}<br>
+                           Your output: ${data.output || 'none'}<br>
+                           Expected: ${data.expected}`;
+    
+                } catch (error) {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `🚨 Network Error: ${error.message}`;
+                }
+            });
         });
     </script>
 </body>
