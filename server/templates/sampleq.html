@@ -233,6 +233,26 @@
             box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25);
         }
         
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .result-box.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+            color: #d4edda;
+        }
+        
+        .result-box.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+            color: #f8d7da;
+        }
+        
         /* Make it responsive */
         @media (max-width: 768px) {
             .container {
@@ -282,15 +302,6 @@
     </div>
 
     <form id="codeForm">
-        <!--
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required 
-                pattern="[A-Za-z0-9_]{4,20}" 
-                title="4-20 characters (letters, numbers, underscores)">
-            </div> 
-        -->
-
         <div class="form-group">
             <label for="usernameDisplay">Username:</label>
             <span id="usernameDisplay" class="username-display">Loading...</span>
@@ -320,23 +331,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             
-            const username = localStorage.getItem('username') || 'Guest';
+            // For testing, use either the stored username or a default value
+            const username = localStorage.getItem('username') || 'test2';
             document.getElementById('usernameDisplay').textContent = username;
             
             // Get the question ID from the URL
             const urlParams = new URLSearchParams(window.location.search);
-            const questionId = urlParams.get('id');
-    
-            if (!questionId) {
-                alert('No question ID provided!');
-                return;
-            }
+            const questionId = urlParams.get('id') || 1; // Default to question 1 if no ID
     
             let question = null;
     
             try {
                 // Fetch the question data from the JSON file
-                const response = await fetch('../questions.json'); // Adjust the path if needed
+                const response = await fetch('questions.json'); // Adjust the path if needed
                 const questions = await response.json();
     
                 // Find the question with the matching ID
@@ -355,6 +362,7 @@
     
             } catch (error) {
                 console.error('Error loading question:', error);
+                alert('Error loading question data. Please try again later.');
             }
     
             // Handle form submission
@@ -368,14 +376,18 @@
                     alert('Question data is not loaded yet!');
                     return;
                 }
+                
+                // Show loading state
+                resultDiv.className = '';
+                resultDiv.innerHTML = 'Evaluating your solution...';
     
                 // Collect form data
                 const formData = {
-                    username: document.getElementById('username').value,
+                    username: username, // Use the retrieved username
                     code: document.getElementById('codeArea').value,
                     language: document.getElementById('languageSelect').value,
-                    question_id: question.id, // Include the question ID
-                    expected_output: question.sample_output // Include the expected output
+                    question_id: question.id,
+                    expected_output: question.sample_output // Use the expected output from questions.json
                 };
     
                 try {
@@ -389,15 +401,15 @@
                     const data = await response.json();
     
                     // Display the evaluation results
-                    resultDiv.className = data.correct ? 'success' : 'error';
+                    resultDiv.className = data.correct ? 'result-box success' : 'result-box error';
                     resultDiv.innerHTML = data.correct
                         ? `✅ Correct! ${data.message}`
                         : `❌ Error: ${data.message}<br>
                            Your output: ${data.output || 'none'}<br>
-                           Expected: ${data.expected}`;
+                           Expected: ${data.expected || question.sample_output}`;
     
                 } catch (error) {
-                    resultDiv.className = 'error';
+                    resultDiv.className = 'result-box error';
                     resultDiv.innerHTML = `🚨 Network Error: ${error.message}`;
                 }
             });

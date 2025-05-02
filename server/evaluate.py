@@ -1,8 +1,8 @@
 import ast
 import re
 from pyston import PystonClient, File
-import subprocess
 import asyncio
+import json
 
 def validate_python_code(code):
     """Perform syntax and security validation"""
@@ -25,6 +25,13 @@ def validate_python_code(code):
     except SyntaxError as e:
         return False, f"Syntax error: {str(e)}"
 
+def clean_output(output_text):
+    """Clean and standardize the output for comparison"""
+    # Remove whitespace, normalize newlines
+    cleaned = output_text.strip()
+    # Handle edge cases based on output format
+    return cleaned
+
 async def run_code(code, language, expected_output):
     """Execute code with validation and scoring"""
     if language == "python":
@@ -33,28 +40,43 @@ async def run_code(code, language, expected_output):
             return {
                 "correct": False,
                 "message": message,
+                "output": None,
+                "expected": expected_output,
                 "score": 0
             }
 
         try:
             client = PystonClient()
-            output = await client.execute("python", [File(code)])
-            print(type(output))
-            cleaned_output = str(output)
-            expected_cleaned ="10"
+            result = await client.execute("python", [File(code)])
             
-            correct = cleaned_output == expected_cleaned
+            # Get and clean the output from execution
+            actual_output = str(result).strip()
+            cleaned_expected = expected_output.strip()
+            
+            # Compare the actual output with the expected output
+            is_correct = actual_output == cleaned_expected
+            
             return {
-                "correct": correct,
-                "score": 10 if correct else 0,
-                "message": "Code executed successfully"
+                "correct": is_correct,
+                "output": actual_output,
+                "expected": cleaned_expected,
+                "message": "Code executed successfully" if is_correct else "Output doesn't match expected result",
+                "score": 10 if is_correct else 0
             }
             
         except Exception as e:
             return {
                 "correct": False,
                 "message": f"Execution error: {str(e)}",
+                "output": None,
+                "expected": expected_output,
                 "score": 0
             }
     
-    return {"correct": False, "message": "Unsupported language", "score": 0}
+    return {
+        "correct": False, 
+        "message": "Unsupported language", 
+        "output": None,
+        "expected": expected_output,
+        "score": 0
+    }
