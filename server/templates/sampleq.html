@@ -282,14 +282,19 @@
     </div>
 
     <form id="codeForm">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required 
-                   pattern="[A-Za-z0-9_]{4,20}" 
-                   title="4-20 characters (letters, numbers, underscores)">
-        </div>
+        <!--
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required 
+                pattern="[A-Za-z0-9_]{4,20}" 
+                title="4-20 characters (letters, numbers, underscores)">
+            </div> 
+        -->
 
         <div class="form-group">
+            <label for="usernameDisplay">Username:</label>
+            <span id="usernameDisplay" class="username-display">Loading...</span>
+            <br/>
             <label for="languageSelect">Select Language:</label>
             <select id="languageSelect" name="language" required>
                 <option value="python">Python</option>
@@ -314,6 +319,10 @@
     <!-- Integrated Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            
+            const username = localStorage.getItem('username') || 'Guest';
+            document.getElementById('usernameDisplay').textContent = username;
+            
             // Get the question ID from the URL
             const urlParams = new URLSearchParams(window.location.search);
             const questionId = urlParams.get('id');
