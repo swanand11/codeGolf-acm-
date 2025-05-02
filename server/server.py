@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import base64
-from evaluate import run_code  #
+from evaluate import run_code  
+import asyncio 
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -13,7 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Secret key for session management, from the .env file or a default value
+# Secret key for session management, from the .env
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key')
 
 # Connection pool for PostgreSQL
@@ -165,9 +166,10 @@ def evaluate_code():
     username = data.get('username')
     code = data.get('code')
     language = data.get('language')
-    expected_output = data.get('expected_output')
+    expected_output = "10"
 
-    result = run_code(code, language, expected_output)
+    # Run the async function synchronously
+    result = asyncio.run(run_code(code, language, expected_output))
 
     if result["correct"]:
         conn = get_db_connection()
@@ -176,11 +178,17 @@ def evaluate_code():
             cursor.execute("SELECT score FROM users WHERE username = %s", (username,))
             row = cursor.fetchone()
             current_score = row[0] if row else 0
-
             new_score = current_score + result["score"]
-            cursor.execute("UPDATE users SET score = %s WHERE username = %s", (new_score, username))
+            
+            cursor.execute(
+                "UPDATE users SET score = %s WHERE username = %s",
+                (new_score, username)
+            )
             conn.commit()
             cursor.close()
+            
+            result["message"] = f"Score updated! New total: {new_score}"
+            
         finally:
             release_connection(conn)
 

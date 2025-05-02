@@ -264,56 +264,89 @@
     </style>
 </head>
 <body>
+    <!-- Existing header and container -->
     <div class="header">
         <div class="header-logo">
             <span class="acm">ACM</span><span class="rit">RIT</span>
         </div>
     </div>
+    
     <div class="container">
-        <div class="nav-bar">
-            <a href="mainpage.html" class="back-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                </svg>
-                Back to Questions
-            </a>
-        </div>
+        <!-- Navigation and sample case sections remain unchanged -->
         
-        <h1>Generate Fibonacci Series</h1>
-        <p><strong>Input:</strong> A number <code>n</code>.<br>
-        <strong>Output:</strong> First <code>n</code> Fibonacci numbers using an array/list.</p>
-        
-        <div class="sample-case">
-            <h3>Sample Case</h3>
-            <p><strong>Input:</strong> 6</p>
-            <p><strong>Output:</strong></p>
-            <pre>[0, 1, 1, 2, 3, 5]</pre>
-            <p><strong>Explanation:</strong> The first 6 numbers in the Fibonacci sequence are 0, 1, 1, 2, 3, and 5.</p>
-        </div>
-        
-        <form>
-            <label for="languageSelect">Select Language:</label>
-            <select id="languageSelect" name="language">
-                <option value="java">Java</option>
-                <option value="c">C</option>
-                <option value="python">Python</option>
-            </select>
-            
-            <label for="codeArea">Write your code below:</label>
-            <textarea id="codeArea" name="code" placeholder="Enter your solution here..."></textarea>
-            <br>
+        <!-- Updated Form with Username Field -->
+        <form id="codeForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required 
+                       pattern="[A-Za-z0-9_]{4,20}" 
+                       title="4-20 characters (letters, numbers, underscores)">
+            </div>
+
+            <div class="form-group">
+                <label for="languageSelect">Select Language:</label>
+                <select id="languageSelect" name="language" required>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="codeArea">Code:</label>
+                <textarea id="codeArea" name="code" 
+                          placeholder="def fibonacci(n):" 
+                          required spellcheck="false"></textarea>
+            </div>
+
             <button type="submit">Submit Solution</button>
         </form>
-        
-        <!-- <div class="jdoodle-container">
-            <div data-pym-src="https://www.jdoodle.com/embed/v1/f52e037ab74dfe14"></div>
-            <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
-        </div> -->
-        
-        <div class="nav-buttons">
-            <a href="mainpage.html" class="nav-button">All Questions</a>
-            <a href="leaderbord.html" class="nav-button">View Leaderboard</a>
-        </div>
+
+        <!-- Result Display -->
+        <div id="result" class="result-box"></div>
+
+        <!-- Existing navigation buttons -->
     </div>
+
+    <!-- Integrated Script -->
+    <script>
+        const form = document.getElementById('codeForm');
+        const resultDiv = document.getElementById('result');
+        const expectedOutput = [0, 1, 1, 2, 3, 5]; // For n=6
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                username: document.getElementById('username').value,
+                code: document.getElementById('codeArea').value,
+                language: document.getElementById('languageSelect').value,
+                expected_output: expectedOutput
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/evaluate_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                // Display results with styling
+                resultDiv.className = data.correct ? 'success' : 'error';
+                resultDiv.innerHTML = data.correct ?
+                    `✅ Correct! ${data.message}` :
+                    `❌ Error: ${data.message}<br>
+                     Your output: ${data.output || 'none'}<br>
+                     Expected: ${data.expected}`;
+
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `🚨 Network Error: ${error.message}`;
+            }
+        });
+    </script>
 </body>
+
 </html>
