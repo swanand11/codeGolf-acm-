@@ -3,35 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Leaderboard - ACM RIT</title>
     <style>
+        :root {
+            --dark-blue: #0d1b2a;
+            --medium-blue: #1b263b;
+            --light-blue: #415a77;
+            --accent-blue: #007bff;
+            --white: #f8f9fa;
+            --gray: #e0e1dd;
+            --rit-red: #F76902;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--dark-blue);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            color: var(--white);
+            line-height: 1.6;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 15px;
+        }
+        
+        .header-logo {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+        
+        .acm {
+            color: var(--white);
+            background-color: var(--dark-blue);
+            padding: 6px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .rit {
+            color: var(--rit-red);
+            margin-left: 6px;
+            font-weight: 800;
         }
 
         .leaderboard {
             width: 90%;
-            max-width: 600px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            background: var(--medium-blue);
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
         .leaderboard h1 {
             text-align: center;
-            background: #4CAF50;
-            color: white;
+            background: var(--light-blue);
+            color: var(--white);
             margin: 0;
-            padding: 20px;
-            font-size: 24px;
+            padding: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            border-bottom: 3px solid var(--accent-blue);
         }
 
         .leaderboard table {
@@ -40,27 +81,107 @@
         }
 
         .leaderboard th, .leaderboard td {
-            padding: 15px;
+            padding: 18px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--light-blue);
+            color: var(--white);
         }
 
         .leaderboard th {
-            background-color: #f4f4f9;
-            font-weight: bold;
+            background-color: var(--dark-blue);
+            font-weight: 600;
+            font-size: 17px;
         }
 
         .leaderboard tr:hover {
-            background-color: #f1f1f1;
+            background-color: var(--light-blue);
+            transition: background-color 0.3s ease;
         }
 
         .leaderboard td.rank {
             font-weight: bold;
             text-align: center;
+            font-size: 18px;
+        }
+        
+        /* Highlight top 3 */
+        .leaderboard tr:nth-child(1) td.rank {
+            color: gold;
+            font-size: 20px;
+        }
+        
+        .leaderboard tr:nth-child(2) td.rank {
+            color: silver;
+            font-size: 19px;
+        }
+        
+        .leaderboard tr:nth-child(3) td.rank {
+            color: #cd7f32; /* bronze */
+            font-size: 18px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        
+        .nav-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            background-color: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Make it responsive */
+        @media (max-width: 768px) {
+            .leaderboard {
+                width: 95%;
+            }
+            
+            .leaderboard th, .leaderboard td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .header-logo {
+                font-size: 30px;
+            }
+            
+            .leaderboard h1 {
+                font-size: 24px;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-logo">
+            <span class="acm">ACM</span><span class="rit">RIT</span>
+        </div>
+    </div>
+    
     <div class="leaderboard">
         <h1>Leaderboard</h1>
         <table id="leaderboardTable">
@@ -76,6 +197,12 @@
             </tbody>
         </table>
     </div>
+    
+    <div class="nav-buttons">
+        <a href="sampleq.html" class="nav-button">Back to Challenges</a>
+        <a href="logout" class="nav-button">Logout</a>
+    </div>
+    
     <script>
         async function fetchLeaderboard() {
             try {
@@ -92,7 +219,7 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td class="rank">${index + 1}</td>
-                        <td>${entry.username}</td>   <!-- Use username here -->
+                        <td>${entry.username}</td>
                         <td>${entry.score}</td>
                     `;
                     tableBody.appendChild(row);
@@ -103,6 +230,5 @@
         }
         window.onload = fetchLeaderboard;
     </script>
-    
 </body>
 </html>
