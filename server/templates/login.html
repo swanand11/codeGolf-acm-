@@ -1,3 +1,4 @@
+\login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,8 +189,12 @@
             .then(data => {
                 console.log(data);
                 if (data.message === 'Login successful!') {
+                    // Store username in localStorage for use on questions page
+                    localStorage.setItem('username', username);
+                    
                     alert('Login successful!');
-                    window.location.href = 'leaderbord.html';  
+                    // Redirect to questions page instead of leaderboard
+                    window.location.href = 'questions.html';  
                 } else {
                     alert('Login failed: ' + data.message);
                     window.location.href = 'register.html';  
