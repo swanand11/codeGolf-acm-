@@ -319,7 +319,8 @@
                       placeholder="Write your code here..." 
                       required spellcheck="false"></textarea>
         </div>
-
+        
+        <button type="button" id="saveCodeButton">Save Code</button>
         <button type="submit">Submit Solution</button>
     </form>
 
@@ -329,57 +330,74 @@
     <!-- Integrated Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            
             // For testing, use either the stored username or a default value
-            const username = localStorage.getItem('username') || 'test2';
+            const username = localStorage.getItem('username') || 'Guest';
             document.getElementById('usernameDisplay').textContent = username;
-            
+        
             // Get the question ID from the URL
             const urlParams = new URLSearchParams(window.location.search);
             const questionId = urlParams.get('id') || 1; // Default to question 1 if no ID
-    
+        
             let question = null;
-    
+        
             try {
                 // Fetch the question data from the JSON file
                 const response = await fetch('questions.json'); // Adjust the path if needed
                 const questions = await response.json();
-    
+        
                 // Find the question with the matching ID
                 question = questions.find(q => q.id === parseInt(questionId));
                 if (!question) {
                     alert('Question not found!');
                     return;
                 }
-    
+        
                 // Populate the page with the question details
                 document.title = question.title; // Update the page title
                 document.getElementById('questionTitle').textContent = question.title;
                 document.getElementById('questionDescription').textContent = question.description;
                 document.getElementById('sampleInput').textContent = question.sample_input;
                 document.getElementById('sampleOutput').textContent = question.sample_output;
-    
+        
+                // Load the user's previous submission from localStorage (if any)
+                const savedSubmission = localStorage.getItem(`submission_${question.id}`);
+                document.getElementById('codeArea').value = savedSubmission || '';
+        
             } catch (error) {
                 console.error('Error loading question:', error);
                 alert('Error loading question data. Please try again later.');
             }
-    
-            // Handle form submission
-            const form = document.getElementById('codeForm');
-            const resultDiv = document.getElementById('result');
-    
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-    
+        
+            // Handle "Save Code" button click
+            document.getElementById('saveCodeButton').addEventListener('click', () => {
+                const code = document.getElementById('codeArea').value;
+        
                 if (!question) {
                     alert('Question data is not loaded yet!');
                     return;
                 }
-                
+        
+                // Save the submission to localStorage
+                localStorage.setItem(`submission_${question.id}`, code);
+                alert('Code saved successfully!');
+            });
+        
+            // Handle form submission
+            const form = document.getElementById('codeForm');
+            const resultDiv = document.getElementById('result');
+        
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+        
+                if (!question) {
+                    alert('Question data is not loaded yet!');
+                    return;
+                }
+        
                 // Show loading state
                 resultDiv.className = '';
                 resultDiv.innerHTML = 'Evaluating your solution...';
-    
+        
                 // Collect form data
                 const formData = {
                     username: username, // Use the retrieved username
@@ -388,7 +406,7 @@
                     question_id: question.id,
                     expected_output: question.sample_output // Use the expected output from questions.json
                 };
-    
+        
                 try {
                     // Send the data to the backend for evaluation
                     const response = await fetch('http://localhost:5000/evaluate_code', {
@@ -396,9 +414,9 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(formData)
                     });
-    
+        
                     const data = await response.json();
-    
+        
                     // Display the evaluation results
                     resultDiv.className = data.correct ? 'result-box success' : 'result-box error';
                     resultDiv.innerHTML = data.correct
@@ -406,7 +424,7 @@
                         : `❌ Error: ${data.message}<br>
                            Your output: ${data.output || 'none'}<br>
                            Expected: ${data.expected || question.sample_output}`;
-    
+        
                 } catch (error) {
                     resultDiv.className = 'result-box error';
                     resultDiv.innerHTML = `🚨 Network Error: ${error.message}`;
