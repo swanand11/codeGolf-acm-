@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "title": "Fibonacci Series",
+        "description": "Generate the first n numbers in the Fibonacci sequence.",
+        "sample_input": "6",
+        "sample_output": "[0, 1, 1, 2, 3, 5]"
+    },
+    {
+        "id": 2,
+        "title": "FizzBuzz",
+        "description": "Print numbers from 1 to n, replacing multiples of 3 with 'Fizz' and multiples of 5 with 'Buzz'.",
+        "sample_input": "15",
+        "sample_output": "1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz"
+    },
+    {
+        "id": 3,
+        "title": "Palindrome Checker",
+        "description": "Check if a given string is a palindrome.",
+        "sample_input": "'racecar'",
+        "sample_output": "True"
+    },
+    {
+        "id": 4,
+        "title": "Two Sum",
+        "difficulty": "Medium",
+        "description": "Find two numbers in an array that add up to a specific target and return their indices.",
+        "sample_input": "[2, 7, 11, 15], target = 9",
+        "sample_output": "[0, 1]"
+    },
+    {
+        "id": 5,
+        "title": "Binary Tree Traversal",
+        "difficulty": "Hard",
+        "description": "Implement in-order, pre-order, and post-order traversal for a binary tree structure.",
+        "sample_input": "Binary Tree: [1, null, 2, 3]",
+        "sample_output": "In-order: [1, 3, 2], Pre-order: [1, 2, 3], Post-order: [3, 2, 1]"
+    },
+    {
+        "id": 6,
+        "title": "Merge K Sorted Lists",
+        "difficulty": "Hard",
+        "description": "Merge k sorted linked lists into one sorted linked list. Optimize for performance.",
+        "sample_input": "[[1, 4, 5], [1, 3, 4], [2, 6]]",
+        "sample_output": "[1, 1, 2, 3, 4, 4, 5, 6]"
+    }
+]
