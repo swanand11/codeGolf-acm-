@@ -37,7 +37,39 @@ def get_db_connection():
 
 def release_connection(conn):
     db_pool.putconn(conn)
+def reset_tables():
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        # Drop in reverse-dependency order
+        cur.execute("DROP TABLE IF EXISTS user_completed_questions;")
+        cur.execute("DROP TABLE IF EXISTS users;")
+        conn.commit()
 
+        # Recreate with your desired schema
+        cur.execute("""
+            CREATE TABLE users (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                score REAL DEFAULT 0
+            );
+        """)
+        cur.execute("""
+            CREATE TABLE user_completed_questions (
+                id SERIAL PRIMARY KEY,
+                username TEXT NOT NULL,
+                question_id INTEGER NOT NULL,
+                code_length INTEGER DEFAULT 0,
+                score REAL DEFAULT 0,
+                UNIQUE(username, question_id)
+            );
+        """)
+        conn.commit()
+        cur.close()
+        print("✅ Tables reset successfully.")
+    finally:
+        release_connection(conn)
 # Create table for users if it doesn't exist
 def create_table():
     conn = get_db_connection()
@@ -48,16 +80,17 @@ def create_table():
                 id SERIAL PRIMARY KEY,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
-                score INTEGER DEFAULT 0
+                score REAL DEFAULT 0
             )
         ''')
-        
-        # Also create a table to track completed questions
+    
         cur.execute('''
             CREATE TABLE IF NOT EXISTS user_completed_questions (
                 id SERIAL PRIMARY KEY,
                 username TEXT NOT NULL,
                 question_id INTEGER NOT NULL,
+                code_length INTEGER DEFAULT 0,
+                score REAL DEFAULT 0,
                 UNIQUE(username, question_id)
             )
         ''')
@@ -69,14 +102,14 @@ def create_table():
 
 # Initialize the connection pool
 init_connection_pool()
-
+#reset_tables()  # Reset tables for development
 # Create the table if it doesn't exist
 create_table()
 
 # Load questions from JSON
 def load_questions():
     try:
-        with open('questions.json', 'r') as file:
+        with open('server/templetes/questions.json', 'r') as file:
             return json.load(file)
     except Exception as e:
         print(f"Error loading questions: {e}")
@@ -159,6 +192,46 @@ def show_leaderboard():
     finally:
         release_connection(conn)
 
+@app.route('/user_solutions', methods=['GET'])
+def user_solutions():
+    username = request.args.get('username')
+    if not username:
+        return jsonify({"message": "Username is required"}), 400
+
+    # Load question metadata once
+    questions = load_questions()
+    qmap = { q['id']: q for q in questions }
+
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+          SELECT question_id, code_length, score
+          FROM user_completed_questions
+          WHERE username = %s
+          ORDER BY question_id
+        """, (username,))
+        rows = cur.fetchall()
+        cur.close()
+    finally:
+        release_connection(conn)
+
+    # Enrich
+    result = []
+    for qid, length, sc in rows:
+        meta = qmap.get(qid, {})
+        result.append({
+            "question_id":      qid,
+            "title":            meta.get('title'),
+            "difficulty":       meta.get('difficulty'),
+            "code_length":      length,
+            "target_chars":     meta.get('target_chars'),
+            "score":            sc
+        })
+
+    return jsonify(result)
+
+
 # Update score route
 @app.route('/update_score', methods=['POST'])
 def update_score():
@@ -209,7 +282,7 @@ def evaluate_code():
                 break
     
     # Run the async function synchronously
-    result = asyncio.run(run_code(code, language, expected_output))
+    result = asyncio.run(run_code(code, language, expected_output, question_id))
 
     if result["correct"]:
         conn = get_db_connection()
@@ -218,51 +291,68 @@ def evaluate_code():
             
             # Check if this user has already solved this question
             cursor.execute(
-                "SELECT id FROM user_completed_questions WHERE username = %s AND question_id = %s",
+                "SELECT id, score FROM user_completed_questions WHERE username = %s AND question_id = %s",
                 (username, question_id)
             )
             already_completed = cursor.fetchone()
             
+            # Get current user score
+            cursor.execute("SELECT score FROM users WHERE username = %s", (username,))
+            row = cursor.fetchone()
+            current_user_score = row[0] if row else 0
+            
             if not already_completed:
-                # Update the user's score only if they haven't solved this question before
-                cursor.execute("SELECT score FROM users WHERE username = %s", (username,))
-                row = cursor.fetchone()
-                current_score = row[0] if row else 0
-                new_score = current_score + result["score"]
+                # This is the first time solving this question
+                new_user_score = current_user_score + result["score"]
                 
+                # Update the user's total score
                 cursor.execute(
                     "UPDATE users SET score = %s WHERE username = %s",
-                    (new_score, username)
+                    (new_user_score, username)
                 )
                 
-                # Mark the question as completed by this user
+                # Record the solution details
                 cursor.execute(
-                    "INSERT INTO user_completed_questions (username, question_id) VALUES (%s, %s)",
-                    (username, question_id)
+                    "INSERT INTO user_completed_questions (username, question_id, code_length, score) VALUES (%s, %s, %s, %s)",
+                    (username, question_id, result["code_length"], result["score"])
                 )
                 
                 conn.commit()
-                result["message"] = f"Correct! Score updated. New total: {new_score} points"
+                result["message"] = f"Correct! {result['message']} Score: {result['score']}. New total: {new_user_score} points"
             else:
-                # User already solved this question
-                cursor.execute("SELECT score FROM users WHERE username = %s", (username,))
-                current_score = cursor.fetchone()[0]
-                result["message"] = f"Correct! You've already received points for this question. Current score: {current_score}"
+                prev_score = already_completed[1]
+                
+                # Check if the new score is better
+                if result["score"] > prev_score:
+                    # Update the score difference in user's total
+                    score_diff = result["score"] - prev_score
+                    new_user_score = current_user_score + score_diff
+                    
+                    # Update the user's total score
+                    cursor.execute(
+                        "UPDATE users SET score = %s WHERE username = %s",
+                        (new_user_score, username)
+                    )
+                    
+                    # Update the solution record
+                    cursor.execute(
+                        "UPDATE user_completed_questions SET code_length = %s, score = %s WHERE username = %s AND question_id = %s",
+                        (result["code_length"], result["score"], username, question_id)
+                    )
+                    
+                    conn.commit()
+                    result["message"] = f"Correct! {result['message']} Score improved by {score_diff} points! New total: {new_user_score} points"
+                else:
+                    result["message"] = f"Correct! {result['message']} But your previous solution had a better score ({prev_score} vs {result['score']}). Total points unchanged: {current_user_score}"
                 
             cursor.close()
             
         except Exception as e:
             print(f"Database error: {e}")
-            result["message"] = "Solution correct, but there was an error updating your score."
+            result["message"] = f"Solution correct, but there was an error updating your score: {str(e)}"
         finally:
             release_connection(conn)
 
     return jsonify(result)
-
-@app.route('/get_questions', methods=['GET'])
-def get_questions():
-    questions = load_questions()
-    return jsonify(questions)
-
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
