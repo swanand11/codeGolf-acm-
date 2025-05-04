@@ -206,7 +206,7 @@
     <script>
         async function fetchLeaderboard() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/showleaderboard');
+                const response = await fetch('/showleaderboard');
                 if (!response.ok) {
                     throw new Error('Failed to fetch leaderboard data');
                 }

@@ -177,7 +177,7 @@
             const username = document.getElementById('register-username').value;
             const password = document.getElementById('register-password').value;
 
-            fetch('http://localhost:5000/register', {
+            fetch('/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

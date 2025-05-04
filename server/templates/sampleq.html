@@ -425,7 +425,7 @@
         
                 try {
                     // Send the data to the backend for evaluation
-                    const response = await fetch('http://localhost:5000/evaluate_code', {
+                    const response = await fetch('/evaluate_code', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(formData)
