@@ -358,7 +358,7 @@
         
             try {
                 // Fetch the question data from the JSON file
-                const response = await fetch('questions.json'); // Adjust the path if needed
+                const response = await fetch('static/questions.json'); 
                 const questions = await response.json();
         
                 // Find the question with the matching ID

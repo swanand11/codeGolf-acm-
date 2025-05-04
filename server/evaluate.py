@@ -43,7 +43,7 @@ async def validate_test_cases(code, language, question_id):
     """Validate the submitted code against all test cases for the given question."""
     try:
         # Load test cases from testcases.json
-        with open("templates/testcases.json", "r") as file:
+        with open("static/testcases.json", "r") as file:
             testcases = json.load(file)
         
         # Get test cases for the given question ID
