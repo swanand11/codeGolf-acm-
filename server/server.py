@@ -3,7 +3,7 @@ import json
 import psycopg2
 from psycopg2 import pool
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, render_template
 from flask_cors import CORS
 import base64
 from evaluate import run_code  
@@ -20,6 +20,10 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key')
 
 # Connection pool for PostgreSQL
 db_pool = None
+
+@app.route('/')
+def home():
+    return render_template('server/templates/login.html')
 
 # Initialize PostgreSQL connection pool with the DATABASE_URL from .env
 def init_connection_pool():
