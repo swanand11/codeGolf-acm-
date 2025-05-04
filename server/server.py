@@ -24,7 +24,7 @@ db_pool = None
 
 @app.route('/')
 def home():
-    return render_template('server/templates/login.html')
+    return render_template('templates/login.html')
 
 # Initialize PostgreSQL connection pool with the DATABASE_URL from .env
 def init_connection_pool():
@@ -114,7 +114,7 @@ create_table()
 # Load questions from JSON
 def load_questions():
     try:
-        with open('server/templetes/questions.json', 'r') as file:
+        with open('templetes/questions.json', 'r') as file:
             return json.load(file)
     except Exception as e:
         print(f"Error loading questions: {e}")
