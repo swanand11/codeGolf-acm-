@@ -34,7 +34,8 @@ def registerpage():
     return render_template('register.html')
 @app.route('/leaderboard')
 def leaderboard():  
-    return render_template('leaderbord.html')
+    return render_template('leaderboard.html')
+
 @app.route('/sampleq')
 def sampleq():
     return render_template('sampleq.html')
