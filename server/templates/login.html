@@ -194,10 +194,10 @@
                     
                     alert('Login successful!');
                     // Redirect to questions page instead of leaderboard
-                    window.location.href = 'mainpage.html';  
+                    window.location.href = 'mainpage';  
                 } else {
                     alert('Login failed: ' + data.message);
-                    window.location.href = 'register.html';  
+                    window.location.href = 'register';  
                 }
             })
             .catch(error => console.log('Login Error:', error));

@@ -165,7 +165,7 @@
         </form>
         
         <div class="login-link">
-            <p>Already have an account? <a href="login.html">Login</a></p>
+            <p>Already have an account? <a href="login">Login</a></p>
         </div>
     </div>
 
@@ -189,7 +189,7 @@
                 console.log(data);
                 if (data.message === 'Registration successful!') {
                     alert('Registration successful! You can now log in.');
-                    window.location.href = 'login.html';  
+                    window.location.href = 'login';  
                 } else {
                     alert('Registration failed: ' + data.message);
                 }
