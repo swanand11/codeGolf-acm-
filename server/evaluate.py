@@ -102,7 +102,7 @@ async def run_code(code, language, expected_output, question_id):
 
         # If all test cases pass, calculate the score
         try:
-            with open("templates/questions.json", "r") as file:
+            with open("static/questions.json", "r") as file:
                 questions = json.load(file)
                 question = next((q for q in questions if q["id"] == question_id), None)
                 if not question:

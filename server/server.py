@@ -34,7 +34,7 @@ def registerpage():
     return render_template('register.html')
 @app.route('/leaderboard')
 def leaderboard():  
-    return render_template('leaderboard.html')
+    return render_template('leaderbord.html')
 @app.route('/sampleq')
 def sampleq():
     return render_template('sampleq.html')
@@ -127,7 +127,7 @@ create_table()
 # Load questions from JSON
 def load_questions():
     try:
-        with open('templetes/questions.json', 'r') as file:
+        with open('static/questions.json', 'r') as file:
             return json.load(file)
     except Exception as e:
         print(f"Error loading questions: {e}")
