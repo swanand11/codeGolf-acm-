@@ -25,6 +25,19 @@ db_pool = None
 @app.route('/')
 def home():
     return render_template('login.html')
+@app.route('/mainpage')
+def mainpage():
+    return render_template('mainpage.html')
+
+@app.route('/register')
+def registerpage():
+    return render_template('register.html')
+@app.route('/leaderboard')
+def leaderboard():  
+    return render_template('leaderboard.html')
+@app.route('/sampleq')
+def sampleq():
+    return render_template('sampleq.html')
 
 # Initialize PostgreSQL connection pool with the DATABASE_URL from .env
 def init_connection_pool():
